@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -20,7 +21,7 @@ body{
 	color:white;
 }
 .fa-microphone{
-	font-size:50px;
+	font-size:500px;
 	text-align:center;
 	width:100px;
 	height:100px;
@@ -50,7 +51,7 @@ stroke-width: 0.5px;
 </style>
 <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
 
-<link href="http://localhost:8080/Ch/chat/awasome/css/all.css" rel="stylesheet"/> 
+<link href="/sdcard/htdocs/Ch/chat/awasome/css/all.css" rel="stylesheet"/> 
 </head>
 <body id="bd" >
 <button onclick="onClick()" class="fa fa-microphone" ></button>
@@ -94,8 +95,14 @@ var rec = new webkitSpeechRecognition();
 
 
 
+
+
 rec.onresult = function(event){
 	var sp = event.results[0][0].transcript;
+
+
+
+
 
 
 
@@ -148,10 +155,10 @@ ad.style.display ="none";
 }
 
 if(sp == "what's your name" || sp == "what is your name"){
-	say("My name is Samantha");
+	say("My name is Samantha"); 
 }
 
-if(sp == "what's the fuck" || sp == "what is your fuck" || sp == "what the f***" ){
+if(sp == "what's the fuck" || sp == "what is your fuck" || sp == "what the f***"){
 	say("Fuck yourself"); 
 }
 
@@ -188,10 +195,88 @@ rec.start();
 
 
 
-</script>      
-       
-<p id="demo" >Say Something...</p>
-<p style="fon-size:10px;text-align:center;" >Created by Fahad Ali</p>
+window.onload = function () {
+    "use strict";
+    var paths = document.getElementsByTagName('path');
+    var visualizer = document.getElementById('visualizer');
+    var mask = visualizer.getElementById('mask');
 
+    var path;
+    var report = 0;
+    
+    var soundAllowed = function (stream) {
+        //Audio stops listening in FF without // window.persistAudioStream = stream;
+        //https://bugzilla.mozilla.org/show_bug.cgi?id=965483
+        //https://support.mozilla.org/en-US/questions/984179
+        window.persistAudioStream = stream;
+
+
+        var audioContent = new AudioContext();
+        var audioStream = audioContent.createMediaStreamSource( stream );
+        var analyser = audioContent.createAnalyser();
+        audioStream.connect(analyser);
+        analyser.fftSize = 1024;
+
+        var frequencyArray = new Uint8Array(analyser.frequencyBinCount);
+        visualizer.setAttribute('viewBox', '0 0 255 255');
+      
+				//Through the frequencyArray has a length longer than 255, there seems to be no
+        //significant data after this point. Not worth visualizing.
+        for (var i = 0 ; i < 255; i++) {
+            path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('stroke-dasharray', '4,1');
+            mask.appendChild(path);
+        }
+        var doDraw = function () {
+            requestAnimationFrame(doDraw);
+            analyser.getByteFrequencyData(frequencyArray);
+          	var adjustedLength;
+            for (var i = 0 ; i < 255; i++) {
+              	adjustedLength = Math.floor(frequencyArray[i]) - (Math.floor(frequencyArray[i]) % 5);
+                paths[i].setAttribute('d', 'M '+ (i) +',255 l 0,-' + adjustedLength);
+            }
+
+        }
+        doDraw();
+    }
+
+    var soundNotAllowed = function (error) {
+
+        console.log(error);
+    }
+
+    /*window.navigator = window.navigator || {};
+    /*navigator.getUserMedia =  navigator.getUserMedia       ||
+                              navigator.webkitGetUserMedia ||
+                              navigator.mozGetUserMedia    ||
+                              null;*/
+    navigator.getUserMedia({audio:true}, soundAllowed, soundNotAllowed);
+
+}
+
+
+</script>
+
+<p id="demo" >Say Something...</p>
+
+
+<svg preserveAspectRatio="none" id="visualizer" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+           <defs>
+
+               <mask id="mask">
+                   <g id="maskGroup">
+                 </g>
+               </mask>
+               <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                   <stop offset="0%" style="stop-color:#ff0a0a;stop-opacity:1" />
+                   <stop offset="20%" style="stop-color:#f1ff0a;stop-opacity:1" />
+                   <stop offset="90%" style="stop-color:#d923b9;stop-opacity:1" />
+                   <stop offset="100%" style="stop-color:#050d61;stop-opacity:1" />
+               </linearGradient>
+           </defs>
+           <rect x="0" y="0" width="100%" height="100%" fill="url(#gradient)" mask="url(#mask)"></rect>
+       </svg>
+
+<p style="fon-size:10px;text-align:center;" >Created by Fahad Ali</p>
 </body>
 </html>
