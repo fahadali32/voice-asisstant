@@ -189,7 +189,21 @@ if( sp == "creator" || sp == "who is your Creator"){
 if(sp == "open new tab on chrome"){
 	location.href = "chrome://newtab";
 }
+if (sp == "how are you" || sp == "how are you doing") {
+    say("I'm just a computer program, but I'm functioning well. How about you?");
+}
 
+if (sp == "tell me a joke" || sp == "say something funny") {
+    say("Why don't scientists trust atoms? Because they make up everything!");
+}
+
+if (sp == "search for something") {
+    // Voeg hier code toe om te zoeken naar hetgeen de gebruiker heeft gezegd.
+    // Bijvoorbeeld: window.open("https://www.google.com/search?q=" + encodeURIComponent(sp));
+    say("Ik heb gezocht naar " + sp);
+}
+
+// Voeg meer if-voorwaarden toe voor andere responsmogelijkheden.
 
 }
 
